@@ -2,273 +2,162 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Upload Game - BloxBack</title>
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Verdana&display=swap');
-    body, html {
-      margin: 0; padding: 0;
-      font-family: Verdana, Geneva, Tahoma, sans-serif;
-      background-color: #d5d5d5;
-      color: #333;
-      height: 100vh;
-      display: flex;
-      flex-direction: column;
+    body {
+      font-family: Arial, sans-serif;
+      padding: 2rem;
+      background: #f4f4f4;
     }
-    .top-navbar {
-      background-color: #0066cc;
-      color: white;
-      padding: 8px 20px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      height: 48px;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+
+    h1 {
+      text-align: center;
     }
-    .top-navbar .logo {
-      font-weight: bold;
-      font-size: 20px;
-      cursor: pointer;
-      user-select: none;
-    }
-    .top-navbar nav a {
-      color: white;
-      text-decoration: none;
-      margin-left: 20px;
-      font-weight: 600;
-      font-size: 14px;
-      padding: 6px 10px;
-      border-radius: 3px;
-      user-select: none;
-    }
-    .top-navbar nav a:hover {
-      background-color: #0052a3;
-    }
-    .main-wrapper {
-      display: flex;
-      flex-grow: 1;
-      max-width: 800px;
-      margin: 20px auto;
-      background: white;
-      border: 1px solid #aaa;
-      border-radius: 4px;
-      box-shadow: 0 3px 6px rgba(0,0,0,0.15);
-      height: calc(100vh - 96px);
-      padding: 20px;
-      flex-direction: column;
-    }
+
     form {
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
+      background: white;
+      padding: 2rem;
+      border-radius: 10px;
+      max-width: 500px;
+      margin: auto;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
     }
+
     label {
+      display: block;
+      margin-top: 1rem;
       font-weight: bold;
-      color: #0066cc;
-      user-select: none;
     }
-    input[type="text"], textarea, input[type="file"] {
-      padding: 8px;
-      font-size: 14px;
-      border-radius: 4px;
+
+    input, textarea {
+      width: 100%;
+      padding: 0.5rem;
+      margin-top: 0.3rem;
       border: 1px solid #ccc;
-      resize: vertical;
+      border-radius: 5px;
     }
-    textarea {
-      min-height: 100px;
-    }
-    input[disabled] {
-      background-color: #eee;
-      color: #666;
-      cursor: not-allowed;
-    }
+
     button {
-      width: 140px;
-      padding: 10px;
-      background-color: #00cc00;
+      margin-top: 1.5rem;
+      padding: 0.7rem 1.2rem;
+      font-size: 1rem;
+      background-color: #0078d4;
       color: white;
-      font-weight: bold;
-      font-size: 16px;
       border: none;
-      border-radius: 20px;
+      border-radius: 5px;
       cursor: pointer;
-      user-select: none;
-      align-self: flex-start;
     }
-    button:hover {
-      background-color: #009900;
+
+    #result {
+      margin-top: 2rem;
+      text-align: center;
     }
-    .message {
-      margin-top: 12px;
-      font-weight: bold;
-      color: #009900;
-      user-select: none;
-    }
+
     .error {
       color: red;
+      margin-top: 0.5rem;
     }
-    footer {
-      background-color: #0066cc;
-      color: white;
-      padding: 12px 20px;
-      text-align: center;
-      font-size: 12px;
-      user-select: none;
-      margin-top: auto;
-      border-radius: 0 0 4px 4px;
+
+    pre {
+      text-align: left;
+      background: #eee;
+      padding: 1rem;
+      border-radius: 5px;
+      overflow-x: auto;
     }
   </style>
 </head>
 <body>
+  <h1>Upload Your Game</h1>
+  <form id="uploadForm">
+    <label for="gamename">Game Name</label>
+    <input type="text" id="gamename" required />
 
-  <div class="top-navbar">
-    <div class="logo" onclick="location.href='index.html'">BloxBack</div>
-    <nav>
-      <a href="index.html">Home</a>
-      <a href="games.html">Games</a>
-      <a href="upload.html">Upload</a>
-    </nav>
-  </div>
+    <label for="description">Description</label>
+    <textarea id="description" rows="4" required></textarea>
 
-  <div class="main-wrapper">
-    <h1>Upload Your Game</h1>
+    <label for="thumbnail">Thumbnail Image (required)</label>
+    <input type="file" id="thumbnail" accept="image/*" required />
 
-    <form id="upload-form">
-      <label for="title">Game Title</label>
-      <input type="text" id="title" required />
+    <label for="gamefile">Game File (.rbxl only)</label>
+    <input type="file" id="gamefile" accept=".rbxl" required />
 
-      <label for="creator">Creator Name</label>
-      <input type="text" id="creator" value="kippy2012" disabled />
+    <button type="submit">Generate Game JSON</button>
+    <div class="error" id="error"></div>
+  </form>
 
-      <label for="thumbnail">Thumbnail Image (image file only)</label>
-      <input type="file" id="thumbnail" accept="image/*" required />
+  <div id="result"></div>
 
-      <label for="gamefile">Game File (.rbxl only)</label>
-      <input type="file" id="gamefile" accept=".rbxl" required />
-
-      <button type="submit">Publish</button>
-    </form>
-
-    <div class="message" id="message"></div>
-  </div>
-
-  <footer>
-    &copy; 2025 BloxBack Revival | Created by kippy2012
-  </footer>
-
-  <!-- JSZip library for zipping files -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.7.1/jszip.min.js"></script>
   <script>
-    const form = document.getElementById('upload-form');
-    const messageDiv = document.getElementById('message');
+    const form = document.getElementById('uploadForm');
+    const result = document.getElementById('result');
+    const errorDiv = document.getElementById('error');
 
-    form.addEventListener('submit', async e => {
+    function showError(message) {
+      errorDiv.textContent = message;
+    }
+
+    form.addEventListener('submit', async (e) => {
       e.preventDefault();
+      showError('');
+      result.innerHTML = '';
 
-      messageDiv.textContent = '';
-      messageDiv.classList.remove('error');
-
-      const title = document.getElementById('title').value.trim();
-      const creator = document.getElementById('creator').value.trim();
-      const thumbnailInput = document.getElementById('thumbnail');
-      const gamefileInput = document.getElementById('gamefile');
-
-      if (!title) {
-        showError('Please enter the game title.');
-        return;
-      }
-
-      if (!thumbnailInput.files.length) {
-        showError('Please upload a thumbnail image file.');
-        return;
-      }
-
-      if (!gamefileInput.files.length) {
-        showError('Please upload a game file (.rbxl).');
-        return;
-      }
-
-      const thumbnailFile = thumbnailInput.files[0];
-      const gameFile = gamefileInput.files[0];
+      const gamename = document.getElementById('gamename').value.trim();
+      const description = document.getElementById('description').value.trim();
+      const thumbnailFile = document.getElementById('thumbnail').files[0];
+      const gameFile = document.getElementById('gamefile').files[0];
 
       // Validate file types
-      if (!thumbnailFile.type.startsWith('image/')) {
+      if (!thumbnailFile || !thumbnailFile.type.startsWith('image/')) {
         showError('Thumbnail must be an image file.');
         return;
       }
 
-      if (!gameFile.name.toLowerCase().endsWith('.rbxl')) {
+      if (!gameFile || !gameFile.name.toLowerCase().endsWith('.rbxl')) {
         showError('Game file must be a .rbxl file.');
         return;
       }
 
-      try {
-        const thumbnailBase64 = await readFileAsBase64(thumbnailFile);
-        const gameFileBase64 = await readFileAsBase64(gameFile);
-
-        const gameData = {
-          title,
-          creator,
-          thumbnail: {
-            name: thumbnailFile.name,
-            type: thumbnailFile.type,
-            base64: thumbnailBase64
-          },
-          gamefile: {
-            name: gameFile.name,
-            type: gameFile.type,
-            base64: gameFileBase64
-          }
-        };
-
-        const zip = new JSZip();
-        zip.file("game.json", JSON.stringify(gameData, null, 2));
-
-        zip.file(thumbnailFile.name, base64ToBlob(thumbnailBase64), {binary:true});
-        zip.file(gameFile.name, base64ToBlob(gameFileBase64), {binary:true});
-
-        const content = await zip.generateAsync({type:"blob"});
-
-        const url = URL.createObjectURL(content);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = title.replace(/\s+/g, '_') + "_upload.zip";
-        document.body.appendChild(a);
-        a.click();
-        a.remove();
-        URL.revokeObjectURL(url);
-
-        messageDiv.textContent = `Your game upload package for "${title}" was created! Download started.`;
-        form.reset();
-      } catch (err) {
-        showError("Error reading files: " + err.message);
-      }
-    });
-
-    function readFileAsBase64(file) {
-      return new Promise((resolve, reject) => {
+      // Convert image to base64
+      const toBase64 = file => new Promise((resolve, reject) => {
         const reader = new FileReader();
-        reader.onload = () => resolve(reader.result.split(',')[1]); // remove data:*/*;base64,
+        reader.onload = () => resolve(reader.result);
         reader.onerror = reject;
         reader.readAsDataURL(file);
       });
-    }
 
-    function base64ToBlob(base64) {
-      const binaryString = atob(base64);
-      const len = binaryString.length;
-      const bytes = new Uint8Array(len);
-      for (let i = 0; i < len; i++) {
-        bytes[i] = binaryString.charCodeAt(i);
-      }
-      return new Blob([bytes]);
-    }
+      const thumbnailData = await toBase64(thumbnailFile);
 
-    function showError(msg) {
-      messageDiv.classList.add('error');
-      messageDiv.textContent = msg;
+      // Create JSON object
+      const gameData = {
+        name: gamename,
+        description: description,
+        thumbnail: thumbnailData,
+        rbxlFile: gameFile.name
+      };
+
+      const jsonString = JSON.stringify(gameData, null, 2);
+
+      // Show JSON & download button
+      result.innerHTML = `
+        <h3>Game JSON Ready!</h3>
+        <p>Copy this into your <code>games.json</code> file on GitHub:</p>
+        <pre>${jsonString}</pre>
+        <button onclick="downloadJSON()">Download JSON</button>
+      `;
+
+      // Store for download
+      window.lastGameJSON = jsonString;
+    });
+
+    function downloadJSON() {
+      const blob = new Blob([window.lastGameJSON], { type: 'application/json' });
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.download = 'game.json';
+      link.click();
     }
   </script>
-
 </body>
 </html>
