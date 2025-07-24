@@ -2,284 +2,104 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Games - BloxBack</title>
   <style>
-    /* Reuse styles from index.html for navbar, sidebar, content, etc. */
-    @import url('https://fonts.googleapis.com/css2?family=Verdana&display=swap');
-    body, html {
-      margin: 0; padding: 0;
-      font-family: Verdana, Geneva, Tahoma, sans-serif;
-      background-color: #d5d5d5;
-      color: #333;
-      height: 100vh;
-      display: flex;
-      flex-direction: column;
+    body {
+      font-family: Arial, sans-serif;
+      background: #f4f4f4;
+      margin: 0;
+      padding: 1rem;
     }
-    .top-navbar {
-      background-color: #0066cc;
-      color: white;
-      padding: 8px 20px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      height: 48px;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.3);
-    }
-    .top-navbar .logo {
-      font-weight: bold;
-      font-size: 20px;
-      cursor: pointer;
-      user-select: none;
-    }
-    .top-navbar nav a {
-      color: white;
-      text-decoration: none;
-      margin-left: 20px;
-      font-weight: 600;
-      font-size: 14px;
-      padding: 6px 10px;
-      border-radius: 3px;
-      user-select: none;
-    }
-    .top-navbar nav a:hover {
-      background-color: #0052a3;
-    }
-    .top-navbar .search-bar {
-      flex-grow: 1;
-      max-width: 300px;
-      margin: 0 20px;
-    }
-    .top-navbar .search-bar input {
-      width: 100%;
-      padding: 5px 10px;
-      border-radius: 3px;
-      border: none;
-      font-size: 14px;
-    }
-    .main-wrapper {
-      display: flex;
-      flex-grow: 1;
-      max-width: 1200px;
-      margin: 20px auto;
-      background: white;
-      border: 1px solid #aaa;
-      border-radius: 4px;
-      overflow: hidden;
-      box-shadow: 0 3px 6px rgba(0,0,0,0.15);
-      height: calc(100vh - 96px);
-    }
-    .sidebar {
-      background-color: #f2f2f2;
-      width: 200px;
-      padding: 15px;
-      border-right: 1px solid #ccc;
-      display: flex;
-      flex-direction: column;
-      gap: 15px;
-    }
-    .sidebar .section {
-      background-color: white;
-      border: 1px solid #ccc;
-      padding: 10px;
-      border-radius: 4px;
+
+    h1 {
       text-align: center;
-      font-weight: bold;
-      color: #0066cc;
-      user-select: none;
     }
-    .sidebar .section .number {
-      font-size: 28px;
-      margin-top: 5px;
-      color: #009900;
+
+    .games-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 1rem;
+      margin-top: 2rem;
     }
-    .content {
-      flex-grow: 1;
-      padding: 20px;
-      overflow-y: auto;
-    }
-    .content h1 {
-      color: #0066cc;
-      margin-top: 0;
-    }
-    .game-list {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 15px;
-      margin-top: 10px;
-    }
+
     .game-card {
-      background-color: #f9f9f9;
-      border: 1px solid #ccc;
-      border-radius: 4px;
-      width: 220px;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-      cursor: pointer;
-      transition: box-shadow 0.2s ease;
-      text-align: center;
-      padding-bottom: 10px;
-      display: flex;
-      flex-direction: column;
-      user-select: none;
+      background: white;
+      padding: 1rem;
+      border-radius: 8px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
     }
-    .game-card:hover {
-      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-    }
-    .game-thumb {
-      width: 220px;
-      height: 140px;
-      border-bottom: 1px solid #bbb;
-      border-top-left-radius: 4px;
-      border-top-right-radius: 4px;
+
+    .game-card img {
+      width: 100%;
+      height: 150px;
       object-fit: cover;
-      background-color: #ccc;
-      flex-shrink: 0;
+      border-radius: 5px;
     }
-    .game-title {
-      font-weight: bold;
-      font-size: 16px;
-      margin: 8px 0 4px 0;
-      color: #0066cc;
-      flex-grow: 1;
-      padding: 0 8px;
+
+    .game-card h3 {
+      margin-top: 0.5rem;
     }
-    .game-creator {
-      font-size: 12px;
+
+    .game-card p {
+      font-size: 0.9rem;
       color: #555;
-      margin-bottom: 6px;
-      padding: 0 8px;
     }
-    .play-button {
+
+    .play-btn {
       display: inline-block;
-      background-color: #00cc00;
+      margin-top: 0.5rem;
+      padding: 0.5rem 1rem;
+      background-color: #0078d4;
       color: white;
-      font-weight: bold;
-      padding: 6px 16px;
-      border-radius: 12px;
-      font-size: 14px;
       text-decoration: none;
-      margin: 0 auto 10px auto;
-      user-select: none;
-      width: fit-content;
+      border-radius: 4px;
+      font-size: 0.9rem;
     }
-    .play-button:hover {
-      background-color: #009900;
-    }
-    footer {
-      background-color: #0066cc;
-      color: white;
-      padding: 12px 20px;
+
+    .error {
+      color: red;
       text-align: center;
-      font-size: 12px;
-      user-select: none;
-    }
-    @media (max-width: 800px) {
-      .main-wrapper {
-        flex-direction: column;
-        height: auto;
-      }
-      .sidebar {
-        width: 100%;
-        flex-direction: row;
-        justify-content: space-around;
-        border-right: none;
-        border-bottom: 1px solid #ccc;
-      }
-      .sidebar .section {
-        flex: 1;
-        margin: 0 5px;
-      }
-      .game-list {
-        justify-content: center;
-      }
     }
   </style>
 </head>
 <body>
-
-  <!-- Top Navbar -->
-  <div class="top-navbar">
-    <div class="logo" onclick="location.href='index.html'">BloxBack</div>
-    <nav>
-      <a href="index.html">Home</a>
-      <a href="games.html">Games</a>
-      <a href="upload.html">Upload</a>
-    </nav>
-    <div class="search-bar">
-      <input type="text" placeholder="Search games..." oninput="filterGames(this.value)" />
-    </div>
-  </div>
-
-  <!-- Main Layout -->
-  <div class="main-wrapper">
-
-    <!-- Sidebar -->
-    <div class="sidebar">
-      <div class="section">
-        Robux
-        <div class="number">100</div>
-      </div>
-      <div class="section">
-        Tickets
-        <div class="number">250</div>
-      </div>
-      <div class="section">
-        Messages
-        <div class="number">0</div>
-      </div>
-      <div class="section">
-        Friends
-        <div class="number">0</div>
-      </div>
-    </div>
-
-    <!-- Content -->
-    <div class="content">
-      <h1>All Games</h1>
-
-      <div class="game-list" id="game-list">
-
-        <div class="game-card" data-name="Escape the Lava Obby">
-          <img src="https://i.imgur.com/Ef0Oq5h.png" alt="Escape the Lava Obby" class="game-thumb" />
-          <div class="game-title">Escape the Lava Obby</div>
-          <div class="game-creator">By NoobGuy99</div>
-          <a href="play.html?game=https://raw.githubusercontent.com/kippy2012/BloxBack/main/games/lavaobby.json" class="play-button">▶️ Play</a>
-        </div>
-
-        <div class="game-card" data-name="Brick Tycoon">
-          <img src="https://i.imgur.com/9n8sXnt.png" alt="Brick Tycoon" class="game-thumb" />
-          <div class="game-title">Brick Tycoon</div>
-          <div class="game-creator">By BrickMaster3000</div>
-          <a href="play.html?game=https://raw.githubusercontent.com/kippy2012/BloxBack/main/games/bricktycoon.json" class="play-button">▶️ Play</a>
-        </div>
-
-        <!-- Add more games here -->
-
-      </div>
-    </div>
-
-  </div>
-
-  <!-- Footer -->
-  <footer>
-    &copy; 2025 BloxBack Revival | Created by kippy2012
-  </footer>
+  <h1>All Games</h1>
+  <div class="games-container" id="gamesContainer"></div>
+  <div class="error" id="errorMsg"></div>
 
   <script>
-    // Search Filter for Games
-    function filterGames(searchText) {
-      searchText = searchText.toLowerCase();
-      const games = document.querySelectorAll('.game-card');
-      games.forEach(game => {
-        const name = game.getAttribute('data-name').toLowerCase();
-        if (name.includes(searchText)) {
-          game.style.display = 'flex';
-        } else {
-          game.style.display = 'none';
-        }
-      });
-    }
-  </script>
+    async function loadGames() {
+      const container = document.getElementById('gamesContainer');
+      const error = document.getElementById('errorMsg');
 
+      try {
+        const res = await fetch('games.json');
+        if (!res.ok) throw new Error("games.json not found");
+
+        const games = await res.json();
+
+        if (!Array.isArray(games)) throw new Error("Invalid game data");
+
+        games.forEach(game => {
+          const card = document.createElement('div');
+          card.className = 'game-card';
+
+          card.innerHTML = `
+            <img src="${game.thumbnail}" alt="Game Thumbnail" />
+            <h3>${game.name}</h3>
+            <p>${game.description}</p>
+            <a href="#" class="play-btn">Play</a>
+          `;
+
+          container.appendChild(card);
+        });
+      } catch (err) {
+        error.textContent = 'Error loading games: ' + err.message;
+      }
+    }
+
+    loadGames();
+  </script>
 </body>
 </html>
