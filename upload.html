@@ -67,7 +67,7 @@
       color: #0066cc;
       user-select: none;
     }
-    input[type="text"], textarea {
+    input[type="text"], textarea, input[type="file"] {
       padding: 8px;
       font-size: 14px;
       border-radius: 4px;
@@ -98,6 +98,9 @@
       font-weight: bold;
       color: #009900;
       user-select: none;
+    }
+    .error {
+      color: red;
     }
     footer {
       background-color: #0066cc;
@@ -130,13 +133,13 @@
       <input type="text" id="title" required />
 
       <label for="creator">Creator Name</label>
-      <input type="text" id="creator" required />
+      <input type="text" id="creator" value="kippy2012" disabled />
 
-      <label for="thumbnail">Thumbnail Image URL</label>
-      <input type="text" id="thumbnail" required />
+      <label for="thumbnail">Thumbnail Image (image file only)</label>
+      <input type="file" id="thumbnail" accept="image/*" required />
 
-      <label for="gamefile">Game File URL (JSON)</label>
-      <input type="text" id="gamefile" required />
+      <label for="gamefile">Game File (.rblx only)</label>
+      <input type="file" id="gamefile" accept=".rblx" required />
 
       <button type="submit">Publish</button>
     </form>
@@ -148,45 +151,123 @@
     &copy; 2025 BloxBack Revival | Created by kippy2012
   </footer>
 
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.7.1/jszip.min.js"></script>
   <script>
     const form = document.getElementById('upload-form');
     const messageDiv = document.getElementById('message');
 
-    form.addEventListener('submit', e => {
+    form.addEventListener('submit', async e => {
       e.preventDefault();
+
+      messageDiv.textContent = '';
+      messageDiv.classList.remove('error');
 
       const title = document.getElementById('title').value.trim();
       const creator = document.getElementById('creator').value.trim();
-      const thumbnail = document.getElementById('thumbnail').value.trim();
-      const gamefile = document.getElementById('gamefile').value.trim();
+      const thumbnailInput = document.getElementById('thumbnail');
+      const gamefileInput = document.getElementById('gamefile');
 
-      if (!title || !creator || !thumbnail || !gamefile) {
-        messageDiv.style.color = 'red';
-        messageDiv.textContent = 'Please fill in all fields.';
+      if (!title) {
+        showError('Please enter the game title.');
         return;
       }
 
-      const gameData = {
-        title,
-        creator,
-        thumbnail,
-        gamefile
-      };
+      if (!thumbnailInput.files.length) {
+        showError('Please upload a thumbnail image file.');
+        return;
+      }
 
-      // Create JSON blob and download
-      const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(gameData, null, 2));
-      const downloadAnchorNode = document.createElement('a');
-      downloadAnchorNode.setAttribute("href", dataStr);
-      downloadAnchorNode.setAttribute("download", title.replace(/\s+/g, '_') + ".json");
-      document.body.appendChild(downloadAnchorNode);
-      downloadAnchorNode.click();
-      downloadAnchorNode.remove();
+      if (!gamefileInput.files.length) {
+        showError('Please upload a game file (.rblx).');
+        return;
+      }
 
-      messageDiv.style.color = '#009900';
-      messageDiv.textContent = `Game JSON for "${title}" generated. Download started! You can then submit it to the repo manually.`;
+      const thumbnailFile = thumbnailInput.files[0];
+      const gameFile = gamefileInput.files[0];
 
-      form.reset();
+      // Validate file types
+      if (!thumbnailFile.type.startsWith('image/')) {
+        showError('Thumbnail must be an image file.');
+        return;
+      }
+
+      if (!gameFile.name.endsWith('.rblx')) {
+        showError('Game file must be a .rblx file.');
+        return;
+      }
+
+      // Read files as Base64
+      try {
+        const thumbnailBase64 = await readFileAsBase64(thumbnailFile);
+        const gameFileBase64 = await readFileAsBase64(gameFile);
+
+        // Build JSON data
+        const gameData = {
+          title,
+          creator,
+          thumbnail: {
+            name: thumbnailFile.name,
+            type: thumbnailFile.type,
+            base64: thumbnailBase64
+          },
+          gamefile: {
+            name: gameFile.name,
+            type: gameFile.type,
+            base64: gameFileBase64
+          }
+        };
+
+        // Create a ZIP file with JSON and separate files
+        const zip = new JSZip();
+
+        // Add game.json
+        zip.file("game.json", JSON.stringify(gameData, null, 2));
+
+        // Add original files separately too
+        zip.file(thumbnailFile.name, thumbnailBase64ToBlob(thumbnailBase64), {binary:true});
+        zip.file(gameFile.name, thumbnailBase64ToBlob(gameFileBase64), {binary:true});
+
+        const content = await zip.generateAsync({type:"blob"});
+
+        // Trigger download
+        const url = URL.createObjectURL(content);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = title.replace(/\s+/g, '_') + "_upload.zip";
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        URL.revokeObjectURL(url);
+
+        messageDiv.textContent = `Your game upload package for "${title}" was created! Download started.`;
+      } catch (err) {
+        showError("Error reading files: " + err.message);
+      }
     });
+
+    function readFileAsBase64(file) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result.split(',')[1]); // strip data: prefix
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+      });
+    }
+
+    function thumbnailBase64ToBlob(base64) {
+      const binaryString = atob(base64);
+      const len = binaryString.length;
+      const bytes = new Uint8Array(len);
+      for (let i = 0; i < len; i++) {
+        bytes[i] = binaryString.charCodeAt(i);
+      }
+      return new Blob([bytes]);
+    }
+
+    function showError(msg) {
+      messageDiv.classList.add('error');
+      messageDiv.textContent = msg;
+    }
   </script>
 
 </body>
